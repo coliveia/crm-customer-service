@@ -2,10 +2,16 @@ package com.vivo.crm.customer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.kafka.annotation.EnableKafka;
 
+/**
+ * CRM Customer Service Application
+ * Microservice for customer management with Duality Views
+ */
 @SpringBootApplication
-@ComponentScan(basePackages = "com.vivo.crm.customer")
+@EnableJpaAuditing
+@EnableKafka
 public class CustomerServiceApplication {
 
     public static void main(String[] args) {

@@ -1,58 +1,56 @@
 spring:
   application:
     name: crm-customer-service
+  
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: false
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        jdbc:
+          batch_size: 20
+          fetch_size: 50
+  
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
-  jackson:
-    serialization:
-      write-dates-as-timestamps: false
-    default-property-inclusion: non_null
+    url: jdbc:oracle:thin:@localhost:1521:xe
+    username: crm_user
+    password: crm_password
+    driver-class-name: oracle.jdbc.OracleDriver
+  
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: crm-customer-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
 
 server:
-  port: 8085
+  port: 8081
   servlet:
-    context-path: /api
+    context-path: /
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics,prometheus
+        include: health,metrics,prometheus
   endpoint:
     health:
       show-details: always
-
-springdoc:
-  api-docs:
-    path: /customer-service/docs
-  swagger-ui:
-    path: /customer-service/swagger-ui.html
-    operations-sorter: method
-    tags-sorter: alpha
 
 logging:
   level:
     root: INFO
     com.vivo.crm: DEBUG
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-
-# Customer Service Configuration
-customer-service:
-  max-interactions-per-page: 50
-  enable-copilot-integration: true
-  copilot-service-url: http://localhost:8084/api
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
