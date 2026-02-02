@@ -12,65 +12,41 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository para operações de persistência de Customers
- * Acessa dados através de Duality Views do Oracle
+ * TMF629 - Customer Repository
+ * Data access layer for Customer entities
  */
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, String> {
 
-    /**
-     * Busca customer por external ID
-     */
     Optional<Customer> findByExternalId(String externalId);
 
-    /**
-     * Busca customer por email
-     */
+    Page<Customer> findByExternalId(String externalId, Pageable pageable);
+
     Optional<Customer> findByEmail(String email);
 
-    /**
-     * Busca customer por CPF
-     */
-    Optional<Customer> findByCpf(String cpf);
+    Page<Customer> findByEmail(String email, Pageable pageable);
 
-    /**
-     * Busca todos os customers por status
-     */
-    List<Customer> findByStatus(String status);
+    Optional<Customer> findByCpfCnpj(String cpfCnpj);
 
-    /**
-     * Busca todos os customers por segmento
-     */
-    List<Customer> findBySegment(String segment);
+    Optional<Customer> findByPartyRoleId(String partyRoleId);
 
-    /**
-     * Busca customers com paginação por status
-     */
     Page<Customer> findByStatus(String status, Pageable pageable);
 
-    /**
-     * Busca customers com paginação por segmento
-     */
     Page<Customer> findBySegment(String segment, Pageable pageable);
 
-    /**
-     * Busca customers com paginação por nível de risco
-     */
     Page<Customer> findByRiskLevel(String riskLevel, Pageable pageable);
 
-    /**
-     * Busca customers suspensos
-     */
-    @Query("SELECT c FROM Customer c WHERE c.status = 'SUSPENDED'")
-    List<Customer> findSuspendedCustomers();
+    Page<Customer> findByPreferredChannel(String preferredChannel, Pageable pageable);
 
-    /**
-     * Conta customers por status
-     */
-    long countByStatus(String status);
+    @Query("SELECT c FROM Customer c WHERE c.status = :status AND c.segment = :segment")
+    Page<Customer> findByStatusAndSegment(@Param("status") String status, @Param("segment") String segment, Pageable pageable);
 
-    /**
-     * Conta customers por segmento
-     */
-    long countBySegment(String segment);
+    @Query("SELECT c FROM Customer c WHERE LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Customer> searchByName(@Param("name") String name, Pageable pageable);
+
+    @Query("SELECT c FROM Customer c WHERE c.status = 'ACTIVE' AND c.riskLevel = 'HIGH'")
+    List<Customer> findHighRiskActiveCustomers();
+
+    @Query("SELECT COUNT(c) FROM Customer c WHERE c.status = :status")
+    long countByStatus(@Param("status") String status);
 }
