@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
  * Reactive API endpoints for customer management
  */
 @RestController
-@RequestMapping("/customers")
+@RequestMapping("/api/v1/customers")
 @RequiredArgsConstructor
 @Slf4j
 public class CustomerController {
@@ -34,7 +34,7 @@ public class CustomerController {
      */
     @PostMapping
     public Mono<ResponseEntity<CustomerDTO>> createCustomer(@RequestBody Mono<CreateCustomerRequest> request) {
-        log.info("POST /customers - Creating new customer");
+        log.info("POST /api/v1/customers - Creating new customer");
         
         return request
                 .map(customerMapper::toEntity)
@@ -53,7 +53,7 @@ public class CustomerController {
      */
     @GetMapping("/{id}")
     public Mono<ResponseEntity<CustomerDTO>> getCustomerById(@PathVariable String id) {
-        log.info("GET /customers/{} - Getting customer", id);
+        log.info("GET /api/v1/customers/{} - Getting customer", id);
         
         return customerService.getCustomerById(id)
                 .map(customerMapper::toDTO)
@@ -70,7 +70,7 @@ public class CustomerController {
      */
     @GetMapping("/external/{externalId}")
     public Mono<ResponseEntity<CustomerDTO>> getCustomerByExternalId(@PathVariable String externalId) {
-        log.info("GET /customers/external/{} - Getting customer by external ID", externalId);
+        log.info("GET /api/v1/customers/external/{} - Getting customer by external ID", externalId);
         
         return customerService.getCustomerByExternalId(externalId)
                 .map(customerMapper::toDTO)
@@ -87,7 +87,7 @@ public class CustomerController {
      */
     @GetMapping("/email/{email}")
     public Mono<ResponseEntity<CustomerDTO>> getCustomerByEmail(@PathVariable String email) {
-        log.info("GET /customers/email/{} - Getting customer by email", email);
+        log.info("GET /api/v1/customers/email/{} - Getting customer by email", email);
         
         return customerService.getCustomerByEmail(email)
                 .map(customerMapper::toDTO)
@@ -104,7 +104,7 @@ public class CustomerController {
      */
     @GetMapping("/cpf/{cpfCnpj}")
     public Mono<ResponseEntity<CustomerDTO>> getCustomerByCpfCnpj(@PathVariable String cpfCnpj) {
-        log.info("GET /customers/cpf/{} - Getting customer by CPF/CNPJ", cpfCnpj);
+        log.info("GET /api/v1/customers/cpf/{} - Getting customer by CPF/CNPJ", cpfCnpj);
         
         return customerService.getCustomerByCpfCnpj(cpfCnpj)
                 .map(customerMapper::toDTO)
@@ -121,7 +121,7 @@ public class CustomerController {
      */
     @GetMapping("/search")
     public Flux<CustomerDTO> searchCustomersByName(@RequestParam String name) {
-        log.info("GET /customers/search?name={} - Searching customers", name);
+        log.info("GET /api/v1/customers/search?name={} - Searching customers", name);
         
         return customerService.searchCustomersByName(name)
                 .map(customerMapper::toDTO)
@@ -137,7 +137,7 @@ public class CustomerController {
      */
     @GetMapping("/status/{status}")
     public Flux<CustomerDTO> getCustomersByStatus(@PathVariable String status) {
-        log.info("GET /customers/status/{} - Getting customers by status", status);
+        log.info("GET /api/v1/customers/status/{} - Getting customers by status", status);
         
         return customerService.getCustomersByStatus(status)
                 .map(customerMapper::toDTO)
@@ -153,7 +153,7 @@ public class CustomerController {
      */
     @GetMapping("/segment/{segment}")
     public Flux<CustomerDTO> getCustomersBySegment(@PathVariable String segment) {
-        log.info("GET /customers/segment/{} - Getting customers by segment", segment);
+        log.info("GET /api/v1/customers/segment/{} - Getting customers by segment", segment);
         
         return customerService.getCustomersBySegment(segment)
                 .map(customerMapper::toDTO)
@@ -169,7 +169,7 @@ public class CustomerController {
      */
     @GetMapping("/risk/{riskLevel}")
     public Flux<CustomerDTO> getCustomersByRiskLevel(@PathVariable String riskLevel) {
-        log.info("GET /customers/risk/{} - Getting customers by risk level", riskLevel);
+        log.info("GET /api/v1/customers/risk/{} - Getting customers by risk level", riskLevel);
         
         return customerService.getCustomersByRiskLevel(riskLevel)
                 .map(customerMapper::toDTO)
@@ -185,7 +185,7 @@ public class CustomerController {
      */
     @GetMapping("/risk/high/active")
     public Flux<CustomerDTO> getHighRiskActiveCustomers() {
-        log.info("GET /customers/risk/high/active - Getting high risk active customers");
+        log.info("GET /api/v1/customers/risk/high/active - Getting high risk active customers");
         
         return customerService.getHighRiskActiveCustomers()
                 .map(customerMapper::toDTO)
@@ -203,7 +203,7 @@ public class CustomerController {
     public Mono<ResponseEntity<CustomerDTO>> updateCustomer(
             @PathVariable String id,
             @RequestBody Mono<CustomerDTO> request) {
-        log.info("PUT /customers/{} - Updating customer", id);
+        log.info("PUT /api/v1/customers/{} - Updating customer", id);
         
         return request
                 .flatMap(dto -> customerService.getCustomerById(id)
@@ -221,11 +221,11 @@ public class CustomerController {
      * Activate customer
      * POST /customers/{id}/activate
      */
-    @PostMapping("/{id}/activate")
+    @PutMapping("/{id}/activate")
     public Mono<ResponseEntity<CustomerDTO>> activateCustomer(
             @PathVariable String id,
             @RequestParam(required = false, defaultValue = "SYSTEM") String actor) {
-        log.info("POST /customers/{}/activate - Activating customer", id);
+        log.info("POST /api/v1/customers/{}/activate - Activating customer", id);
         
         return customerService.activateCustomer(id, actor)
                 .map(customerMapper::toDTO)
@@ -240,11 +240,11 @@ public class CustomerController {
      * Deactivate customer
      * POST /customers/{id}/deactivate
      */
-    @PostMapping("/{id}/deactivate")
+    @PutMapping("/{id}/deactivate")
     public Mono<ResponseEntity<CustomerDTO>> deactivateCustomer(
             @PathVariable String id,
             @RequestParam(required = false, defaultValue = "SYSTEM") String actor) {
-        log.info("POST /customers/{}/deactivate - Deactivating customer", id);
+        log.info("POST /api/v1/customers/{}/deactivate - Deactivating customer", id);
         
         return customerService.deactivateCustomer(id, actor)
                 .map(customerMapper::toDTO)
@@ -259,12 +259,12 @@ public class CustomerController {
      * Suspend customer
      * POST /customers/{id}/suspend
      */
-    @PostMapping("/{id}/suspend")
+    @PutMapping("/{id}/suspend")
     public Mono<ResponseEntity<CustomerDTO>> suspendCustomer(
             @PathVariable String id,
             @RequestParam String reason,
             @RequestParam(required = false, defaultValue = "SYSTEM") String actor) {
-        log.info("POST /customers/{}/suspend - Suspending customer with reason: {}", id, reason);
+        log.info("POST /api/v1/customers/{}/suspend - Suspending customer with reason: {}", id, reason);
         
         return customerService.suspendCustomer(id, reason, actor)
                 .map(customerMapper::toDTO)
@@ -281,7 +281,7 @@ public class CustomerController {
      */
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteCustomer(@PathVariable String id) {
-        log.info("DELETE /customers/{} - Deleting customer", id);
+        log.info("DELETE /api/v1/customers/{} - Deleting customer", id);
         
         return customerService.deleteCustomer(id)
                 .then(Mono.just(ResponseEntity.noContent().<Void>build()))
@@ -297,7 +297,7 @@ public class CustomerController {
      */
     @GetMapping("/count/status/{status}")
     public Mono<ResponseEntity<Long>> countCustomersByStatus(@PathVariable String status) {
-        log.info("GET /customers/count/status/{} - Counting customers by status", status);
+        log.info("GET /api/v1/customers/count/status/{} - Counting customers by status", status);
         
         return customerService.countCustomersByStatus(status)
                 .map(ResponseEntity::ok)
